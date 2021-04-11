@@ -31,7 +31,7 @@ def dfs_vist_ot(grafo, v, conhecido, tempo_acesso, final, tempo, ordenacao):
 
     tempo = tempo + 1
     final[v-1] = tempo
-    ordenacao.append(v-1)
+    ordenacao.insert(0, v-1)
 
     return conhecido, tempo_acesso, final, tempo, ordenacao
 

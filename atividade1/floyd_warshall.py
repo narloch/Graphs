@@ -21,3 +21,4 @@ for k in num_vertices:
 
 for v in num_vertices:
     print(str(v+1)+": "+','.join(map(str, distancia[v])))
+    
