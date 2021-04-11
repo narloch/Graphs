@@ -15,3 +15,4 @@ def parser_arquivo(arquivo):
 
     
     return vertices, arestas, mapa_arestas
+    
