@@ -8,28 +8,23 @@ import sys
 
 # Algoritmo 17
 def dfs_visit(G, v, C, T, A, F, time):
-    # aliasing
-    index_v = G.vertices.index(v)
-
-    C[index_v] = True
-    time = time + 1
-    T[index_v] = time
-
-    print(G.mapa_arestas)
+    C[G.vertices.index(v)] = True
+    time[0] = time[0] + 1
+    T[G.vertices.index(v)] = time[0]
 
     # saintes de v
-    out_v = [vertex for vertex in G.mapa_arestas[index_v] 
-            if G.mapa_arestas[index_v][vertex] != math.inf]
-
-    print(out_v)
-
+    # castamos para int pois math.inf eh um float. The more you know.
+    out_v = [G.vertices[int(vertex)]
+            for vertex in range(len(G.mapa_arestas[G.vertices.index(v)]))
+            if G.mapa_arestas[G.vertices.index(v)][vertex] != math.inf]
+            
     for u in out_v:
-        if not C[u]:
-            A[u] = v
+        if not C[G.vertices.index(u)]:
+            A[G.vertices.index(u)] = v
             dfs_visit(G, u, C, T, A, F, time)
     
-    time = time + 1
-    F[G.index(v)] = time
+    time[0] = time[0] + 1
+    F[G.vertices.index(v)] = time[0]
 
 
 
@@ -40,7 +35,7 @@ def dfs_cormen(G):
     F = [math.inf for i in range(G.qnt_Vertices())]
     A = [None for i in range(G.qnt_Vertices())]
 
-    time = 0
+    time = [0]
 
     for u in G.vertices:
         if not C[G.vertices.index(u)]:
@@ -58,11 +53,11 @@ def dfs_cormen_b(G, sorted_F):
     F = [math.inf for i in range(G.qnt_Vertices())]
     A = [None for i in range(G.qnt_Vertices())]
 
-    time = 0
+    time = [0]
 
     for u in sorted_F.values():
-        if not C[G.index(u)]:
-            dfs_visit(G, u, C, T, A, F, time)
+        if not C[u]:
+            dfs_visit(G, G.vertices[u], C, T, A, F, time)
     
     return (C, T, A, F)
 
@@ -79,8 +74,10 @@ def transpose(G):
     for i in range(G.qnt_Vertices()):
         for j in range(G.qnt_Vertices()):
             transposed_map[i].append(G.mapa_arestas[j][i])
+    
+    g_dash = Grafo(transposed_vertex, transposed_edges, transposed_map)
 
-    return Grafo(transposed_vertex, transposed_edges, transposed_map)
+    return g_dash
 
 
 
@@ -110,5 +107,33 @@ graph = Grafo(vertex, edges, edges_map)
 
 # cada arvore retornada eh uma componente fortemente conexa
 A_t = strongly_connected_components(graph)
+components = []
 
+copy_A_t = A_t.copy()
 
+# marca o ultimo indice em que None foi encontrado
+last_ocurrence_of_none = 0
+
+# filtra os vertices que nao tem ancestrais
+for _ in copy_A_t:
+    if _ is None:
+        components.append([graph.vertices[A_t.index(_, last_ocurrence_of_none)]])
+        last_ocurrence_of_none = copy_A_t.index(_) + 1
+        copy_A_t.remove(_)
+
+while len(copy_A_t):
+    ancestor_v = copy_A_t.pop(0)
+    found_ancestor = False
+
+    for component in components:
+        if ancestor_v in component:
+            component.append(graph.vertices[A_t.index(ancestor_v)])
+            found_ancestor = True
+            break
+    
+    # retorna pra lista para ser procurado novamente mais tarde
+    if not found_ancestor:
+        copy_A_t.append(ancestor_v)
+
+for component in components:
+    print(', '.join(component))

@@ -6,7 +6,7 @@ def parser_arquivo(arquivo):
     arestas = list()
     mapa_arestas = [[math.inf if i!=j else 0 for i in range(n)] for j in range(n)]
 
-    isPonderado = True if arquivo[n+1] == '*arc' else False
+    isPonderado = True if arquivo[n+1] == '*arcs' else False
 
     for i in range(n+2, len(arquivo)):
         x, y, peso = [int(i) for i in arquivo[i].split()]
